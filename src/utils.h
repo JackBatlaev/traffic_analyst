@@ -6,7 +6,7 @@
 
 void packet_handler(u_char *user_data, const struct pcap_pkthdr *pkthdr,
                     const u_char *packet);
-
+void print_mac_address_sysfs(const char *if_name);
 void print_addresses(pcap_if_t *dev);
 
 #endif

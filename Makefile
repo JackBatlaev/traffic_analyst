@@ -57,6 +57,6 @@ clean:
 	@echo "OBJS determined as (at clean time, from foreach): [$(OBJS)]" # Используем тот же метод вычисления
 	@echo "TARGET is: [$(TARGET)]"
 	@echo "Would try to execute: rm -f $(OBJS) $(TARGET)"
-	rm -f $(OBJS) $(TARGET) # ОСТАВЬТЕ ЗАКОММЕНТИРОВАННЫМ!
+	rm -f $(OBJS) $(TARGET) 
 
 .PHONY: all clean
