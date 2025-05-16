@@ -38,10 +38,14 @@ void packet_handler(u_char *user_data, const struct pcap_pkthdr *pkthdr,
   // Указатели для след уровней парсинга
   const u_char *next_layer_packet = packet + sizeof(struct ether_header);
   bpf_u_int32 next_layer_len = pkthdr->caplen - sizeof(struct ether_header);
+
   // Заглушка пока
-  (void)next_layer_packet;
-  (void)next_layer_len;
+  (void)next_layer_packet; // Явно указываем, что next_layer_packet (пока) не
+                           // используется
+  (void)next_layer_len; // Явно указываем, что next_layer_len (пока) не
+                        // используется
   // Возвращаем EtherType для анализа следующего уровня парсинга
+
   u_int16_t ether_type = parse_ethernet_header(packet, pkthdr);
 
   if (ether_type == 0) {
