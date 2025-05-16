@@ -1,4 +1,5 @@
 #include "utils.h"
+#include "ethernet_parser.h"
 #include <errno.h> // для errno
 #include <fcntl.h> // для open
 #include <linux/if_packet.h>
@@ -31,8 +32,51 @@ void packet_handler(u_char *user_data, const struct pcap_pkthdr *pkthdr,
   strftime(time_buffer, sizeof(time_buffer), "%Y-%m-%d %H:%M:%S", &time_info);
   printf("Захвачен пакет длиной %d байт\n", pkthdr->len);
   printf("Время: %s.%06ld\n", time_buffer, microseconds);
+
+  // Разбор пакета
+  printf("Разбор пакета:\n");
+  // Указатели для след уровней парсинга
+  const u_char *next_layer_packet = packet + sizeof(struct ether_header);
+  bpf_u_int32 next_layer_len = pkthdr->caplen - sizeof(struct ether_header);
+  // Заглушка пока
+  (void)next_layer_packet;
+  (void)next_layer_len;
+  // Возвращаем EtherType для анализа следующего уровня парсинга
+  u_int16_t ether_type = parse_ethernet_header(packet, pkthdr);
+
+  if (ether_type == 0) {
+    printf("  Ошибка разбора Ethernet-заголовка или пакет слишком короткий.\n");
+    printf("------------------------------------------------------------\n");
+    return; // Прекращаем дальнейший разбор этого пакета
+  }
+  // Теперь, на основе ether_type, мы будем решать, какой парсер вызывать дальше
+  switch (ether_type) {
+  case ETH_P_IP: // 0x0800 (IPv4)
+    printf("  Протокол следующего уровня: IPv4\n");
+    // parse_ipv4_header(next_layer_packet, next_layer_len); // TODO:
+    // Реализовать
+    break;
+  case ETH_P_IPV6: // 0x86DD (IPv6)
+    printf("  Протокол следующего уровня: IPv6\n");
+    // parse_ipv6_header(next_layer_packet, next_layer_len); // TODO:
+    // Реализовать
+    break;
+  case ETH_P_ARP: // 0x0806 (ARP)
+    printf("  Протокол следующего уровня: ARP\n");
+    // parse_arp_packet(next_layer_packet, next_layer_len); // TODO: Реализовать
+    break;
+  default:
+    printf("  Протокол следующего уровня (EtherType 0x%04x) пока не "
+           "обрабатывается.\n",
+           ether_type);
+    break;
+  }
+
+  // TODO: Здесь будет дальнейший разбор пакета (IP, TCP/UDP и т.д.)
+  printf("------------------------------------------------------------\n");
 }
 
+// Печать Mac-адресов интерфейсов
 void print_mac_address_sysfs(const char *if_name) {
   char path[256];
   char mac_addr_str[18];

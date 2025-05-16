@@ -12,6 +12,7 @@ LDFLAGS = -lpcap
 TARGET = analyst
 
 SRCS := $(shell find $(SRC_DIR) -maxdepth 1 -name '*.c' -type f)
+
 $(info SRCS determined as: [$(SRCS)])
 
 # Новый способ определения OBJS
@@ -23,9 +24,11 @@ $(foreach src_file,$(SRCS), \
     $(eval TEMP_OBJS += $(obj_name)) \
 )
 OBJS := $(strip $(TEMP_OBJS)) # strip убирает лишние пробелы
+
 $(info OBJS determined as (using foreach): [$(OBJS)])
 
 HEADERS := $(shell find $(SRC_DIR) -maxdepth 1 -name '*.h' -type f)
+
 $(info HEADERS determined as: [$(HEADERS)])
 
 # Проверка, что OBJS не пустой
