@@ -1,5 +1,6 @@
 #include "utils.h"
 #include "ethernet_parser.h"
+#include "ip_parser.h"
 #include <errno.h> // для errno
 #include <fcntl.h> // для open
 #include <linux/if_packet.h>
@@ -57,8 +58,31 @@ void packet_handler(u_char *user_data, const struct pcap_pkthdr *pkthdr,
   switch (ether_type) {
   case ETH_P_IP: // 0x0800 (IPv4)
     printf("  Протокол следующего уровня: IPv4\n");
-    // parse_ipv4_header(next_layer_packet, next_layer_len); // TODO:
-    // Реализовать
+    ipv4_parse_result_t ip_result =
+        parse_ipv4_header(next_layer_packet, next_layer_len);
+    if (ip_result.payload_ptr != NULL && ip_result.transport_protocol != 0) {
+      switch (ip_result.transport_protocol) {
+      case IPPROTO_TCP:
+        printf("    Это TCP. Вызываем парсер TCP...\n");
+        // parse_tcp_header(ip_result.payload_ptr,
+        // ip_result.payload_available_len); // TODO
+        break;
+      case IPPROTO_UDP:
+        printf("    Это UDP. Вызываем парсер UDP...\n");
+        // parse_udp_header(ip_result.payload_ptr,
+        // ip_result.payload_available_len); // TODO
+        break;
+      case IPPROTO_ICMP:
+        printf("    Это ICMP. Вызываем парсер ICMP...\n");
+        // parse_icmp_packet(ip_result.payload_ptr,
+        // ip_result.payload_available_len); // TODO
+        break;
+      default:
+        printf("    Неизвестный транспортный протокол IPv4: %u\n",
+               ip_result.transport_protocol);
+        break;
+      }
+    }
     break;
   case ETH_P_IPV6: // 0x86DD (IPv6)
     printf("  Протокол следующего уровня: IPv6\n");
