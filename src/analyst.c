@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include <unistd.h>
 
 #define STANDART_SIZE 10
@@ -33,6 +34,7 @@ int main() {
   pcap_if_t *d;
   char *dev_name = NULL;
   int num_worker_threads;
+  tzset(); // Время для проверки ошибки
 
   // 1. Получить список всех устройств pcap_findalldevs(укзатель на струтуру,
   // буффер для ошибки)

@@ -14,7 +14,7 @@ TARGET = analyst
 SRCS := $(shell find $(SRC_DIR) -maxdepth 1 -name '*.c' -type f)
 
 $(info SRCS determined as: [$(SRCS)])
-
+#  Почему то OBJS := $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(SRCS)) удаляет .c что не должно быть
 # Новый способ определения OBJS
 OBJS :=
 TEMP_OBJS :=
@@ -53,13 +53,6 @@ endif
 
 # БЕЗОПАСНАЯ ВЕРСИЯ CLEAN ДЛЯ ТЕСТА
 clean:
-	@echo "--- Debugging make clean ---"
-	@echo "Current directory is: $(CURDIR)"
-	@echo "SRC_DIR is: $(SRC_DIR)"
-	@echo "SRCS determined as (at clean time): [$(SRCS)]"
-	@echo "OBJS determined as (at clean time, from foreach): [$(OBJS)]" # Используем тот же метод вычисления
-	@echo "TARGET is: [$(TARGET)]"
-	@echo "Would try to execute: rm -f $(OBJS) $(TARGET)"
 	rm -f $(OBJS) $(TARGET) 
 
 .PHONY: all clean
