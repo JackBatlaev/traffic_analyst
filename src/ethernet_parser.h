@@ -11,7 +11,7 @@ typedef struct {
 } parsed_ethernet_header_t;
 
 /**
- * @brief Разбирает Ethernet-заголовок пакета.
+ * @brief Разбираем Ethernet-заголовок пакета.
  *
  * @param packet Указатель на начало Ethernet-кадра.
  * @param pkthdr Указатель на pcap_pkthdr для получения длины пакета.
