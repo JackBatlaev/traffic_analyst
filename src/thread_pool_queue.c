@@ -170,10 +170,10 @@ void queue_add_packet(const struct pcap_pkthdr *pkthdr,
 void queue_shutdown() {
   printf("queue_shutdown: Завершение работы.\n");
   // Установить keep_running_global = 0
-  keep_running_global = 0;
 
   // Разбудить все потоки (broadcast на обе условные переменные)
   pthread_mutex_lock(&queue_mutex);
+  keep_running_global = 0;
   printf("queue_shutdown: Отправка broadcast на условные переменные...\n");
   pthread_cond_broadcast(&queue_not_empty_cond);
   pthread_cond_broadcast(&queue_not_full_cond);
