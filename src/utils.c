@@ -1,19 +1,22 @@
 #include "utils.h"
 #include "ethernet_parser.h"
 #include "ip_parser.h"
-#include <errno.h> // для errno
-#include <fcntl.h> // для open
+#include "thread_pool_queue.h" // для packet_task_t
+#include <errno.h>             // для errno
+#include <fcntl.h>             // для open
 #include <linux/if_packet.h>
+#include <pcap.h>
 #include <stdio.h>
 #include <string.h> // для strcpy, strcat, strerror
 #include <time.h>
 #include <unistd.h> // для read, close
 // Обработчик пакетов
-void packet_handler(u_char *user_data, const struct pcap_pkthdr *pkthdr,
-                    const u_char *packet) {
-  (void)user_data; // Явно указываем, что user_data не используется, чтобы
-                   // избежать предупреждения
-  (void)packet; // Явно указываем, что packet (пока) не используется
+void process_packet_task(
+    packet_task_t *task) { // Тут мы получаем структуру для переработки функции
+                           // под многопоточность
+  const struct pcap_pkthdr *pkthdr =
+      &task->header; // Приводим структуру к pkthdr
+  const u_char *packet = task->packet_data; // Приводим структуру к packet
 
   time_t seconds = pkthdr->ts.tv_sec;
   long microseconds = pkthdr->ts.tv_usec;
@@ -100,7 +103,7 @@ void packet_handler(u_char *user_data, const struct pcap_pkthdr *pkthdr,
     break;
   }
 
-  // TODO: Здесь будет дальнейший разбор пакета (IP, TCP/UDP и т.д.)
+  // TODO: Здесь дальнейший разбор пакета (IP, TCP/UDP и т.д.)
   printf("------------------------------------------------------------\n");
 }
 
